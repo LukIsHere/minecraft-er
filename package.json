@@ -1,0 +1,22 @@
+{
+  "name": "minecraft-er",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luktvpl/minecraft-er.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luktvpl/minecraft-er/issues"
+  },
+  "homepage": "https://github.com/luktvpl/minecraft-er#readme",
+  "dependencies": {
+    "discord.js": "^13.7.0"
+  }
+}
