@@ -553,6 +553,7 @@ bot.on("messageCreate",msg => {
     console.log(content);
     if(content.charAt(0)=="."){
         var cmd = content.split(" ")
+        if((msg.guild.id=="962661196086009946"&&(msg.channel.id=="962968324923330610"||msg.channel.id=="984440535102144542"))||msg.guild.id!="962661196086009946"){
         switch (cmd[0]){
             case ".render":
                 var core = new gamecore();
@@ -571,11 +572,32 @@ bot.on("messageCreate",msg => {
                             })
                         })
                     })
+                    setTimeout(()=>{
+                        try{
+                        if(games[au].set==true)
+                        try{
+                            sen.edit("Czas minoł. <@"+au+"> zdobył "+games[au].punkty+" punktów") 
+                         }catch{
+                             sen.message.edit("koniec gry.")
+                         }
+                         games[au] = undefined;
+                         sen.reactions.cache.forEach(rec=>{
+                             rec.remove()
+                         })  
+                        }catch{
+
+                        }
+                        
+                    },300000)
                 })
+            
             break
+        }
+            
                 
 
         }
+        msg.delete().catch(err=>console.log(err))
     }
 })
 bot.on("messageReactionAdd",(react,user)=>{
@@ -607,7 +629,7 @@ bot.on("messageReactionAdd",(react,user)=>{
                     break
                     case '984885043111526501':
                         try{
-                            react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty) 
+                            react.message.edit("koniec gry. <@"+user.id+"> zdobył "+games[user.id].punkty+" punktów") 
                          }catch{
                              react.message.edit("koniec gry.")
                          }
