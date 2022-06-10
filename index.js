@@ -1,208 +1,685 @@
-var {Client,Intents} = require("discord.js");
-var conf = require("../minecraft.json").token
-var bot = new Client({ intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS
-]})
-bot.once("ready",()=>{
-    console.log("jestem online");
-})
-bot.on("messageCreate", msg =>{
-    if(!msg.author.bot){
-        var content = msg.content;
-        var cmd = content.split(" ");
-        console.log(cmd);
-        if(content.charAt(0)=="!"){
-            switch (cmd[0]) {
-                case "!start":
-                    msg.channel.send("ok");
-                    generateow();
-                break;
-        
-                default:
-                break;
-        }
-        }  
-    }
-    
-})
-var blocks = {
-    dirt:"dirt",
-    grass:"grass",
-    stone:"stone",
-    air:"air",
-    log:"log",
-    leaves:"leaves",
-    player:"player",
-    bedrock:"bedrock",
-    deepslate:"deepslate"
+// Variables used by Scriptable.
+// These must be at the very top of the file. Do not edit.
+// icon-color: deep-green; icon-glyph: vector-square;
+var platform = "node";
+// console.log("aktualna platforma :")
+//   console.log(process.version) node
+//   console.log(navigator.userAgent) browser
+//   console.log("Scriptable") scriptable
+// aktywacja zmiennych i innem
+var plat = {
+scripable:"Scriptable",
+web:"web",
+node:"node"
 }
-class game {
-    constructor(id,mode=0,map){
-        this.id = id;
-        this.id = mode;
-        this.map = map;
-    }
-}
-class world {
-    constructor(world=0){
-        //64x192
-        //0-4 bedrock
-        //5-64 deepslate
-        //64-128 stone
-        //128-192 air
-        var out = generateow;
-        this.chunk=[]
-    }
-}
-function render(mapa,x,y){
-    
-}
-generateow();
-function generateow(){
-    //bedrock
-    var out = [];
-    //[warstwa-][|wbok]
-    var lsbedrock = 3;
-    for(var iset=0;iset<192;iset++){
-        out[iset]=[];
-    }
-    for(var bdi=0;bdi<64;bdi++){
-        var gut = rand(7);
-        switch (gut) {
-            case 1:
-                if(lsbedrock>1)lsbedrock -=1;
-                break;
-            case 2:
 
-                break;
-            case 3:
-                if(lsbedrock<4)lsbedrock +=1;
-                break;
-            case 4:
-                if(lsbedrock<4)lsbedrock +=1;
-                break;
-            case 5:
-                if(lsbedrock<4)lsbedrock +=1;
-                break;
-            case 6:
-                if(lsbedrock>1)lsbedrock -=1;
-                break;
-            case 7:
-                if(lsbedrock>1)lsbedrock -=1;
-                break;
-            default:
-                break;
-        }
-        for(var ibdr = 0;ibdr<lsbedrock;ibdr++){
-            out[ibdr][bdi] = blocks.bedrock;
-        }
-    }
-    
-    
-    //console.log(out);
-    //deep slate
-    var dslatel = 0;
-    for(var bdi=0;bdi<64;bdi++){
-        var gut = rand(7);
-        switch (gut) {
-            case 1:
-                if(dslatel>1)dslatel -=1;
-                break;
-            case 2:
-                if(dslatel<4)dslatel +=1;
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            default:
-                break;
-        }
-        for(var ibdr = 0;ibdr<dslatel+1;ibdr++){
-            out[ibdr+64][bdi] = blocks.deepslate;
-        }
-        for(var i=0;i<64;i++){
-            if(out[i][bdi]==undefined)out[i][bdi]=blocks.deepslate;
-        }
-        
-    }
-    //stone
-    var slatel = 0;
-    for(var bdi=0;bdi<64;bdi++){
-        var gut = rand(7);
-        switch (gut) {
-            case 1:
-                if(slatel>1)slatel -=1;
-                break;
-            case 2:
-                if(slatel<4)slatel +=1;
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            default:
-                break;
-        }
-        for(var ibdr = 0;ibdr<slatel+1;ibdr++){
-            out[ibdr+128][bdi] = blocks.stone;
-            out[ibdr+129][bdi] = blocks.dirt;
-            out[ibdr+130][bdi] = blocks.dirt;
-            out[ibdr+131][bdi] = blocks.dirt;
-            out[ibdr+132][bdi] = blocks.grass;
-            //drzewa
-            if(rand(20)==7){
-                out[ibdr+133][bdi] = blocks.log;
-                out[ibdr+134][bdi] = blocks.leaves
-                out[ibdr+135][bdi] = blocks.leaves
-                out[ibdr+134][bdi+1] = blocks.leaves
-                out[ibdr+134][bdi-1] = blocks.leaves
+//scriptable setup
+//zmianne do zabawy
+var ww = 64 //szerokość mapy
+var WidgetSize = 31; //rozmiar widgetu
+//zminne do zabwy scriptable only
+var bigrender = false//duży render true/false (nie zalecane z widgetem)
+//innne
+if(isNaN(ww)) ww = 64
+if(platform=="Scriptable"){
+var widget = new ListWidget()
+}
+WidgetSize = WidgetSize*1
+if(WidgetSize>Math.round(ww))WidgetSize=Math.round(ww)
+if(WidgetSize%2!=1)WidgetSize--
+if(WidgetSize<5)WidgetSize=5
+if(isNaN(WidgetSize*1))WidgetSize = 9
+var imgs ={};
+var otherIMG = [
+"bg"
+]
+var imgsl = 0
 
+//blocks
+var dic = {
+        bedrock:{name:"bedrock",emote:"<:25:976747546405920769>",points:0},
+        deepslate:{name:"deepslate",emote:"<:16:976747345008025620>",points:0},
+        stone:{name:"stone",emote:"<:01:976014584836128798>",points:0},
+        dirt:{name:"dirt",emote:"<:04:976025190741966920>",points:0},
+        grass:{name:"grass",emote:"<:00:976014562996391936>",points:0},
+        air:{name:"air",emote:"<:02:976014603182014514>",points:0},
+        wood:{name:"wood",emote:"<:05:976028310289145916>",points:0},
+        leaves:{name:"leaves",emote:"<:06:976028821142794240>",points:0},
+        black:{name:"black",emote:"<:30:976752550713892885>",points:0},
+        diamond:{name:"diamond",emote:"<:08:976747112123486239>",points:100},
+        diamondd:{name:"diamondd",emote:"<:28:976747598763417620>",points:100},
+        coal:{name:"coal",emote:"<:07:976747069731667988>",points:5},
+        coald:{name:"coald",emote:"<:11:976747199310491658>",points:5},
+        copper:{name:"copper",emote:"<:24:976747529930670110>",points:10},
+        copperd:{name:"copperd",emote:"<:21:976747460452036618>",points:10},
+        gold:{name:"gold",emote:"<:09:976747136509173791>",points:20},
+        goldd:{name:"goldd",emote:"<:23:976747504311877643>",points:20},
+        goldn:{name:"goldn",emote:"<:17:976747365719486494>",points:20},
+        iron:{name:"iron",emote:"<:14:976747278100475916>",points:25},
+        irond:{name:"irond",emote:"<:12:976747224799272970>",points:25},
+        emerald:{name:"emerald",emote:"<:19:976747421013012490>",points:200},
+        emeraldd:{name:"emeraldd",emote:"<:13:976747252309717093>",points:200},
+        lapis:{name:"lapis",emote:"<:18:976747395742326794>",points:5},
+        lapisd:{name:"lapisd",emote:"<:22:976747483327778816>",points:5},
+        redstone:{name:"redstone",emote:"<:15:976747301110444042>",points:7},
+        redstoned:{name:"redstoned",emote:"<:29:976747620594749470>",points:7},  
+        quartz:{name:"quartz",emote:"<:20:976747440675905550>",points:10},
+        obsidian:{name:"obsidian",emote:"<:27:976747582762151976>",points:0},
+        netherrack:{name:"netherrack",emote:"<:10:976747165869297665>",points:0},  
+        debris:{name:"debris",emote:"<:26:976747566303686666>",points:0},
+        player:{name:"player",emote:"<:03:976017287154921502>",points:0},
+        fox:{name:"fox",emote:"<:31:976765562275364934>",points:0},	
+		water:{name:"water",emote:"<:32:980055020315758622>",points:0}
+};
+var oredata = {  
+    oreorder:[
+    [[0,0],[0,1]],
+    [[0,0],[0,1],[1,0],[1,1]],
+    [[0,0],[0,1],[1,0],[1,1],[0,2]],
+	[[0,0]],
+	[[1,0],[0,1],[2,1],[3,1],[0,2],[1,2],[2,2],[1,3]],
+	[[1,0],[1,1],[1,2],[0,1]]
+    ],
+    placeingData:[
+    {
+      name:dic.iron.name,
+      y:7,
+      dy:150,
+      ord:[0,1,2],
+      count:40
+    },	
+	{
+      name:dic.copper.name,
+      y:32,
+      dy:100,
+      ord:[1,2],
+      count:60
+    },	
+	{
+      name:dic.lapis.name,
+      y:7,
+      dy:92,
+      ord:[4,0,1],
+      count:30
+    },	
+	{
+      name:dic.redstone.name,
+      y:7,
+      dy:80,
+      ord:[2,4,1,3],
+      count:45
+    },	
+	{//iron 2
+      name:dic.iron.name,
+      y:64,
+      dy:150,
+      ord:[0,1,2,3,5],
+      count:45
+    },	
+	{
+      name:dic.coal.name,
+      y:64,
+      dy:150,
+      ord:[2,0,1],
+      count:45
+    },		
+	{
+      name:dic.diamond.name,
+      y:7,
+      dy:100,
+      ord:[3,0,1],
+      count:30
+    },	
+	{
+      name:dic.gold.name,
+      y:50,
+      dy:150,
+      ord:[2,0,1],
+      count:25
+    },	
+	{
+      name:dic.emerald.name,
+      y:7,
+      dy:150,
+      ord:[3],
+      count:60
+    }
+    ]
+}
+var structures = {	
+	minesheft:{
+	instructions:[],
+//np ["fill",x,y,dx,dy,block] [set,x,y,block]
+	gen:{
+	y:7,
+	dy:64
+	},
+	maxcount:2
+	}
+}
+if(platform=="web"){
+//load images
+/*Object.keys(dic.imgs).forEach(imgName => {
+var urlll = "https://luktvpl.github.io/minecraft-er-web/res/"+imgName+".PNG"
+var img = new Image()
+img.src = urlll;
+img.onLoad = function(){
+dic.imgs[imgName]=img;
+}
+})*/
+}
+class gamecore{
+    constructor(){
+        this.generated = false;
+        this.world = []
+        this.x=Math.round(ww/2);
+        this.y=128;
+        this.generateOW();
+        this.set = true;
+        this.punkty = 0;
+        }
+// generatory światów
+        generateOW(Wwidth = ww){
+		this.Wwidth = Wwidth
+        //overworld generation
+        //prepair
+        this.world = [];
+        for(var seti = 0;seti<192;seti++){
+            this.world[seti] = [];
+        }
+        //bedrock 0-7
+        var bedrockHelp = 3;
+        for(var xi = 0;xi<Wwidth;xi++){
+            var rannd = random(5);
+            //+2 +1 0 -1 -2
+            if(rannd==1&&bedrockHelp+2<8) bedrockHelp = bedrockHelp + 2;
+            if(rannd==2&&bedrockHelp+1<8) bedrockHelp++;
+            if(rannd==4&&bedrockHelp-1>0) bedrockHelp--;
+            if(rannd==5&&bedrockHelp-2>0) bedrockHelp = bedrockHelp - 2;
+            for(var yi = 0;yi<bedrockHelp;yi++){
+                this.world[yi][xi] = dic.bedrock.name;
+            }
+            //deepslate gapp fill
+            for(var yi = 0;yi<7;yi++){
+                if(this.world[yi][xi]!=dic.bedrock.name) this.world[yi][xi] = dic.deepslate.name;
             }
         }
-        for(var i=0;i<128;i++){
-            if(out[i][bdi]==undefined)out[i][bdi]=blocks.stone;
+        
+        //deepslate
+        for(var yi = 7;yi<64;yi++){
+            this.world[yi] = getlineof(dic.deepslate.name);
+        }
+        //irregolar deepslate
+        var deepslateHelp = 3;
+        for(var xi = 0;xi<Wwidth;xi++){
+            var rannd = random(7);
+            //+1 0 0 0 0 0 -1
+            if(rannd==1&&deepslateHelp+1<9)deepslateHelp++;
+            if(rannd==7&&deepslateHelp-1>0)deepslateHelp--;
+            for(var yi = 0;yi<deepslateHelp;yi++){
+                this.world[yi+64][xi] = dic.deepslate.name;
+            }
+            //stone gaps fill
+            for(var yi = 0;yi<8;yi++){
+                if(this.world[yi+64][xi]!=dic.deepslate.name)this.world[yi+64][xi] = dic.stone.name
+            }
+        }
+        //stone
+        
+        //stone line
+        for(var yi = 72;yi<128;yi++){
+            this.world[yi] = getlineof(dic.stone.name);
+        }
+        var stoneHelp = random(21);
+        for(var xi = 0;xi<Wwidth;xi++){
+            //+1 -1 0 0 0 0 0
+            var rannd = random(7);
+            if(rannd==1&&stoneHelp+1<21)stoneHelp++
+            if(rannd==2&&stoneHelp-1>0)stoneHelp--
+            var tempstone = stoneHelp+128
+            for(var yi = 0;yi<stoneHelp;yi++){
+                this.world[yi+128][xi] = dic.stone.name;
+            }
+            this.world[tempstone][xi] = dic.dirt.name;
+            this.world[tempstone+1][xi] = dic.dirt.name;
+            if(tempstone<128+6)this.world[tempstone+2][xi] = dic.dirt.name;else this.world[tempstone+2][xi] = dic.grass.name;
+            //drzewo
+            if(xi==this.x)this.y = tempstone+3
+			
+            if(random(7)==7&&tempstone>128+7){
+                if(xi==32)this.y = tempstone+6
+                this.world[tempstone+3][xi] = dic.wood.name;
+                this.world[tempstone+4][xi] = dic.leaves.name
+                this.world[tempstone+5][xi] = dic.leaves.name
+                if(xi<this.Wwidth)this.world[tempstone+4][xi+1] = dic.leaves.name
+                if(xi>-1)this.world[tempstone+4][xi-1] = dic.leaves.name;
+            }	
+			
+			{
+			
+			for(var wi = 0;wi<9;wi++){
+			if(!this.world[128+wi][xi])this.world[128+wi][xi] = dic.water.name
+			}
+			}
+
+        }
+        //air
+        for(var xi = 0;xi<Wwidth;xi++){
+            for(var yi = 128;yi<181;yi++){
+                if(this.world[yi][xi]==undefined) this.world[yi][xi] = dic.air.name;
+            }	
+// 		
+        }
+        //fill up air
+        
+        for(var yi = 181;yi<192;yi++){
+            this.world[yi] = getlineof(dic.air.name);
+        }	
+// 		generowanie rud	
+		oredata.placeingData.forEach(ore => {	
+// 		 name:dic.diamond.name,
+//       y:0,
+//       dy:100,
+//       ord:[0,1,2],
+//       count:10		
+		
+		for(var c = 0;c<ore.count*(Math.round(this.Wwidth/64));c++){
+		var orey = random(ore.dy-ore.y)+ore.y		
+		
+		var orex = random(Wwidth-1)
+		var order = oredata.oreorder[ore.ord[random(ore.ord.length)-1]]	
+		order.forEach(possp => {
+		this.setblockOre(orex+possp[0], orey+possp[1], ore.name)
+		
+		})
+		}
+		})
+        //generator funkgje pomocnicze
+        function getlineof(block){
+            var out = [];
+            for(var il = 0;il<Wwidth;il++){
+                out[il] = block
+            }
+            return out;
+        }  
+        // funkcje kontroli
+        }
+        getblock(x,y){
+            return this.world[y][x].toString();
+        }	
+		setblockOre(x,y,block){
+			if(this.world[y][x]==dic.stone.name)this.world[y][x] = dic[block].name;	
+			if(this.world[y][x]==dic.deepslate.name)this.world[y][x] = dic[block].name+"d";
+        }
+        setblock(x,y,block){
+            this.world[y][x] = dic[block].name;
+        }
+        fill(x,y,dx,dy,block){ 
+            var xdd = dx-x-1;
+            var ydd = dy-y-1;
+            for(var ix = 0;ix<xdd;ix++){
+                for(var iy = 0;iy<ydd;iy++){
+                    this.world[iy+y][ix+x] = dic[block].name;
+                }
+            }
+        }
+// pozostałe funkcje
+        logWorld(){
+        var oput = "";
+        for(var yi = 0;yi<192;yi++){
+          for(var xi = 0;xi<64;xi++){
+        oput += this.world[191-yi][xi].charAt(0);
+        }
+            oput += "\n"
+            
+        }
+        console.log(oput);
+        }
+//         podstawowy format dc.
+        getdcformatbs(x=this.x,y=this.y){
+        var out = "";
+        var cout = "";
+        out+="Punkty : "+this.punkty+"\n"
+        for(var yi = 0;yi<9;yi++){
+          for(var xi = 0;xi<9;xi++){
+            var b = this.world[y+4-yi][x-4+xi].toString()  
+            cout+=b.charAt(0)
+            if(yi==4&&xi==4)out+= dic.player.emote
+            else out+=dic[b].emote
+          }
+          out+="\n"
+          cout+="\n"
+          
+         }
+        console.log(cout)
+        return out
+         
+        }
+//         rysowanie canvy cały światscriptable
+     drawbigScriptable(x=this.x,y=this.y){
+        var drawc = new DrawContext()		
+		var blue = new Color("#97c7ff")
+		
+		
+		var size = WidgetSize*16
+		var bonsizepar = (WidgetSize-1)/2
+		
+        drawc.size = new Size(this.Wwidth*16, 192*16)		
+		drawc.setFillColor(blue)
+		drawc.fill(new Rect(0, 0, this.Wwidth*16, 192*16))
+        drawc.drawImageInRect(imgs.bg, new Rect(0, 0, 64*16, 64*16))
+        for(var yi = 0;yi<192;yi++){
+          for(var xi = 0;xi<this.Wwidth;xi++){
+            var b = this.world[191-yi][(this.Wwidth-1)-xi].toString()  
+            var scaler = 16
+            drawc.drawImageInRect(imgs[b],new Rect(xi*scaler, yi*scaler, scaler, scaler))
+            
+        }
+      }
+         
+         drawc.font = new Font("Minecraft_PL_Font", 160)
+//         drawc.drawText("test", point(0, 10))
+        drawc
+        var img = drawc.getImage()
+        
+        return img;
+        }	
+		drawCanvasScriptable(x=this.x,y=this.y){
+        var drawc = new DrawContext()	
+		var size = WidgetSize*16
+		var bonsizepar = (WidgetSize-1)/2
+		
+        drawc.size = new Size(size, size)
+        drawc.drawImageInRect(imgs.bg, new Rect(0, 0, size, size))
+        for(var yi = 0;yi<WidgetSize;yi++){
+          for(var xi = 0;xi<WidgetSize;xi++){
+            var b = this.world[y+bonsizepar-yi][x-bonsizepar+xi].toString()  
+            var scaler = 16
+            drawc.drawImageInRect(imgs[b],new Rect(xi*scaler, yi*scaler, scaler, scaler))
+            
+        }
+      }
+         
+         drawc.font = new Font("Minecraft_PL_Font", 160)
+//         drawc.drawText("test", point(0, 10))
+        drawc
+        var img = drawc.getImage()
+        
+        return img;
+        }
+        go(x,y){
+        this.x = x
+        this.y = y
+        this.setAir()
+        }
+        move(x,y){
+        this.x += x
+        this.y += y
+        this.setAir()
+        var ty =(this.y)-1
+        var down = this.getblock(this.x,ty)
+        console.log(down)
+        if(down==dic.air.name)this.move(0,-1)
+        }
+        setAir(x=this.x,y=this.y){
+          this.punkty += dic[this.getblock(x,y)].points
+          this.setblock(x, y, dic.air.name)
+          if(this.getblock(x+1, y)==dic.black.name) this.setAir(x+1, y)  
+          if(this.getblock(x-1, y)==dic.black.name) this.setAir(x-1, y)  
+          if(this.getblock(x, y+1)==dic.black.name) this.setAir(x, y+1)  
+          if(this.getblock(x, y-1)==dic.black.name) this.setAir(x, y-1)
+        }
+        setmsg(msgID){
+            this.msg = msgID;
+        }
+}
+
+function random(to){
+    var rand = (Math.round((Math.random()*10000))%to)+1
+    return rand
+}
+// przegotowanie
+switch(platform){
+case "web":
+// przeglądarka
+ var game = {
+    canvas: document.getElementById("game")
+}
+start()
+break
+case "Scriptable":
+// scriptable
+//wczytywanie bloków
+var fm = FileManager.local()
+var path = fm.documentsDirectory()
+function getpath(fileName){
+return fm.joinPath(path, fileName)
+}
+var bloki = Object.keys(dic)
+bloki.forEach(block =>{
+console.log(block)
+var pthhh = getpath(block+".png")
+if(!fm.fileExists(pthhh)){
+ var req = new Request(getemojiUrl(EmojiToId(dic[block].emote)))
+let img = req.loadImage().then(img =>{
+fm.writeImage(pthhh, img)
+imgs[block]= img
+imgsl++
+
+if(imgsl==bloki.length+otherIMG.length)start()
+})
+
+}else {
+let img = fm.readImage(pthhh)
+imgs[block] = img
+imgsl++
+if(imgsl==bloki.length+otherIMG.length)start()
+}
+})
+// other assets
+
+otherIMG.forEach(block =>{
+console.log(block)
+var pthhh = getpath(block+".png")
+if(!fm.fileExists(pthhh)){
+ var req = new Request("https://luktvpl.github.io/minecraft-er-web/res/"+block+".PNG")
+let img = req.loadImage().then(img =>{
+fm.writeImage(pthhh, img)
+imgs[block]= img
+imgsl++
+
+if(imgsl==bloki.length+otherIMG.length)start()
+})
+
+}else {
+let img = fm.readImage(pthhh)
+imgs[block] = img
+imgsl++
+if(imgsl==bloki.length+otherIMG.length)start()
+}
+})
+
+break
+case "node":
+// node.js
+start()
+break
+}
+// główne skrypty
+function start(){
+switch(platform){
+case "web":
+// przeglądarka
+
+break
+case "Scriptable":
+// scriptable
+var core = new gamecore();
+// core.logWorld()
+sendMessagescr(core.getdcformatbs())
+var wimg = core.drawCanvasScriptable()
+widget.backgroundImage = wimg
+
+QuickLook.present(wimg, true)
+if(bigrender)QuickLook.present(core.drawbigScriptable(), true)
+Script.setWidget(widget)
+break
+//node
+case "node":
+var games = {
+
+}
+var dcss = require("discord.js");
+var bot = new dcss.Client({intents:[
+    dcss.Intents.FLAGS.GUILD_MEMBERS,
+    dcss.Intents.FLAGS.GUILD_MESSAGES,
+    dcss.Intents.FLAGS.GUILDS,
+    dcss.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    dcss.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
+]})
+var emotes = {
+    down:":d_:984848910222762064",
+    rigth:":r_:984848919014039663",
+    left:":l_:984848916455497778"
+
+}
+bot.once("ready",()=>{
+    console.log("połączono dc")
+    var core = new gamecore();
+
+})
+bot.on("messageCreate",msg => {
+    var content = msg.content;
+    console.log(content);
+    if(content.charAt(0)=="."){
+        var cmd = content.split(" ")
+        switch (cmd[0]){
+            case ".render":
+                var core = new gamecore();
+                msg.reply(core.getdcformatbs());
+            break 
+            case ".start":
+                var au = msg.author.id
+                games[au] = new gamecore()
+                msg.channel.send(games[au].getdcformatbs()).then(sen=>{
+                    games[au].setmsg(sen.id)
+                    console.log(sen.id)
+                    sen.react(emotes.left).then(()=>{
+                        sen.react(emotes.down).then(()=>{
+                            sen.react(emotes.rigth).then(()=>{
+                                sen.react(":stop:984885043111526501")
+                            })
+                        })
+                    })
+                })
+            break
+                
+
+        }
+    }
+})
+bot.on("messageReactionAdd",(react,user)=>{
+    var emo = react.emoji.id
+    var emon = react.emoji.name;
+    console.log(emo)
+    console.log(emon)
+    if(emo=='984848916455497778'||emo=='984848910222762064'||emo=='984848919014039663'||emo=='984885043111526501'){
+        if(user.id!="975769257885450340"){
+        react.users.remove(user)
+        try{
+        if(games[user.id].msg==react.message.id){
+            try{
+                switch (emo){
+                    case '984848916455497778':
+                        //left
+                        games[user.id].move(-1,0)
+                        react.message.edit(games[user.id].getdcformatbs())
+                    break
+                    case '984848910222762064':
+                        //down
+                        games[user.id].move(0,-1)
+                        react.message.edit(games[user.id].getdcformatbs())
+                    break
+                    case '984848919014039663':
+                        //right
+                        games[user.id].move(1,0)
+                        react.message.edit(games[user.id].getdcformatbs())
+                    break
+                    case '984885043111526501':
+                        try{
+                            react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty) 
+                         }catch{
+                             react.message.edit("koniec gry.")
+                         }
+                         games[user.id] = undefined;
+                         react.message.reactions.cache.forEach(rec=>{
+                             rec.remove()
+                         })
+                    break
+                    } 
+            }
+            catch{
+                
+                try{
+                   react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty) 
+                }catch{
+                    react.message.edit("koniec gry.")
+                }
+                games[user.id] = undefined;
+                react.message.reactions.cache.forEach(rec=>{
+                    rec.remove()
+                })
+            }
+           
+        }
+        }catch{
+
         }
         
+         
+        } 
     }
-    //air
-    for(var fix1=0;fix1<192;fix1++){
-        for(var fix2=0;fix2<64;fix2++){
-            if(out[fix1][fix2]==undefined)out[fix1][fix2]=blocks.air;
-        }
+})
+bot.login(require("../minecraft.json").token)
+break
+}
+}
+// sendMessagescrable("test")
+//funkcje dodatkowe
+// zdobywanie punktu
+function point(x,y){
+return new Point(x, y)
+}
+// var get emoji url
+function getemojiUrl(id){  
+    return "https://cdn.discordapp.com/emojis/"+id+".png"
+}
+// emoji
+function EmojiToId(emoji){
+return emoji.slice(emoji.length-19, emoji.length-1)
+}
+function sendMessagescr(msg) {
+      var webhookurl = "https://discord.com/api/webhooks/984441794240577586/WKik_qsiqYd10FBUrUH6Iff9K2F655XbYWQm5eFzjgyU6UcULI7MZZpimX5QKTCHUgFF"  
+      const params = {
+        username: "Minecraft'er",
+        avatar_url: "https://github.com/luktvpl/luk_pack_minecraft/raw/main/luk_pack/pack.png",
+        content: msg
+      }
+      if(platform=="Scriptable"){
+//         Scriptable
+      const req = new Request(webhookurl);
+      req.method = "post"
+      req.headers = {
+    	"Content-Type": "application/json"  
+      };
+      req.body = JSON.stringify(params);
+      req.loadJSON();
+     } else{
+//       other
+      const request = new XMLHttpRequest();
+      request.open("POST", webhookurl);
+      request.setRequestHeader('Content-type', 'application/json');
+      request.send(JSON.stringify(params));
+    }
     }
     
-    
-    
-    //out
-    console.log(out);
-    //advanced out
-    out.forEach(v1=>{
-        var outt="";
-        v1.forEach(v2=>{
-            outt+=v2.charAt(0);
-        })
-        console.log(outt);
-    })
-    return out;
-}
-function rand(to){
-    var r = Math.round(Math.random()*10);
-    return r%to+1;
-}
-bot.login(conf)
