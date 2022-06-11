@@ -530,11 +530,33 @@ var games = {
 
 }
 var fs = require("fs")
-var data = JSON.parse(fs.readFileSync("scores.js","utf-8")).catch(err => console.log(err))
+var data = JSON.parse(fs.readFileSync("scores.json","utf-8"))
 function addtolb(nick,score){
+    var nck = nick.slice(0,nick.length-5)
     console.log(nick+":"+score)
-    data[nick] = score
+    data[nck] = score
+    reloadrb()
     fs.writeFileSync("scores.json",JSON.stringify(data),"utf-8")
+}
+var leader =  [];
+reloadrb()
+function reloadrb(){
+    var tempdate = JSON.parse(JSON.stringify(data))
+    var keyss = Object.keys(data)
+    var lead = [];//{name:"",score:""}
+    for(var place = 0;keyss.length>place;place++){
+        var mx = 0
+        var usr = "";
+        keyss.forEach(us=>{
+            if(tempdate[us]>mx){
+                usr = us
+                mx = tempdate[usr]
+            }
+        })
+        lead.push({name:usr,score:mx})
+        tempdate[usr] = undefined
+    }
+    leader = lead
 }
 var dcss = require("discord.js");
 var bot = new dcss.Client({intents:[
@@ -563,9 +585,12 @@ bot.on("messageCreate",msg => {
         if((msg.guild.id=="962661196086009946"&&(msg.channel.id=="962968324923330610"||msg.channel.id=="984440535102144542"))||msg.guild.id!="962661196086009946"){
         switch (cmd[0]){
             case ".ranking":
-                var out = "Aktualne wyniki : \n";
-                Object.keys(data).forEach(user=>{
-                    out+=user+" : "+data[user]+"\n"
+                var out = "Wyniki graczy : \n"
+                console.log(leader)
+                leader.forEach((player,indec)=>{
+                    //{name:usr,score:mx}
+                    var indecc = indec*1+1
+                    out+=indecc+". "+player.name+" : "+player.score+"\n"
                 })
                 msg.channel.send(out)
             break
@@ -612,7 +637,6 @@ bot.on("messageCreate",msg => {
                 
 
         }
-        msg.delete().catch(err=>console.log(err))
     }
 })
 bot.on("messageReactionAdd",(react,user)=>{
