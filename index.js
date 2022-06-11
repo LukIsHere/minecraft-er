@@ -529,6 +529,13 @@ case "node":
 var games = {
 
 }
+var fs = require("fs")
+var data = JSON.parse(fs.readFileSync("scores.js","utf-8")).catch(err => console.log(err))
+function addtolb(nick,score){
+    console.log(nick+":"+score)
+    data[nick] = score
+    fs.writeFileSync("scores.json",JSON.stringify(data),"utf-8")
+}
 var dcss = require("discord.js");
 var bot = new dcss.Client({intents:[
     dcss.Intents.FLAGS.GUILD_MEMBERS,
@@ -555,6 +562,13 @@ bot.on("messageCreate",msg => {
         var cmd = content.split(" ")
         if((msg.guild.id=="962661196086009946"&&(msg.channel.id=="962968324923330610"||msg.channel.id=="984440535102144542"))||msg.guild.id!="962661196086009946"){
         switch (cmd[0]){
+            case ".ranking":
+                var out = "Aktualne wyniki : \n";
+                Object.keys(data).forEach(user=>{
+                    out+=user+" : "+data[user]+"\n"
+                })
+                msg.channel.send(out)
+            break
             case ".render":
                 var core = new gamecore();
                 msg.reply(core.getdcformatbs());
@@ -577,6 +591,7 @@ bot.on("messageCreate",msg => {
                         if(games[au].set==true)
                         try{
                             sen.edit("Czas minoł. <@"+au+"> zdobył "+games[au].punkty+" punktów") 
+                            addtolb(msg.author.tag,games[au].punkty)
                          }catch{
                              sen.message.edit("koniec gry.")
                          }
@@ -630,6 +645,7 @@ bot.on("messageReactionAdd",(react,user)=>{
                     case '984885043111526501':
                         try{
                             react.message.edit("koniec gry. <@"+user.id+"> zdobył "+games[user.id].punkty+" punktów") 
+                            addtolb(user.tag,games[user.id].punkty)
                          }catch{
                              react.message.edit("koniec gry.")
                          }
@@ -643,7 +659,8 @@ bot.on("messageReactionAdd",(react,user)=>{
             catch{
                 
                 try{
-                   react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty) 
+                   react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty)
+                   addtolb(user.tag,games[user.id].punkty) 
                 }catch{
                     react.message.edit("koniec gry.")
                 }
