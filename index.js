@@ -571,7 +571,7 @@ bot.on("messageCreate",msg => {
             break
             case ".render":
                 var core = new gamecore();
-                msg.reply(core.getdcformatbs());
+                msg.channel.send(core.getdcformatbs());
             break 
             case ".start":
                 var au = msg.author.id
