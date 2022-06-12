@@ -529,32 +529,53 @@ case "node":
 var games = {
 
 }
+function getnowdate(){
+    let date_ob = new Date();
+    let date = ("0" + date_ob.getDate()).slice(-2);
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    let year = date_ob.getFullYear();
+    let hours = date_ob.getHours();
+    let minutes = date_ob.getMinutes();
+    let seconds = date_ob.getSeconds();
+    return year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
+}
 var fs = require("fs")
 var data = JSON.parse(fs.readFileSync("scores.json","utf-8"))
-function addtolb(nick,score){
-    var nck = nick.slice(0,nick.length-5)
+function addtolb(nick,score,id){
     console.log(nick+":"+score)
-    data[nck] = score
-    reloadrb()
+    try{
+        if(score>data[id].score){
+            var datenow = getnowdate()
+            data[id] = {score:score,nick:nick,date:datenow}
+        }
+    }catch{
+            var datenow = getnowdate()
+            data[id] = {score:score,nick:nick,date:datenow}
+    }
+    
     fs.writeFileSync("scores.json",JSON.stringify(data),"utf-8")
+    reloadrb()
+    
 }
 var leader =  [];
 reloadrb()
 function reloadrb(){
     var tempdate = JSON.parse(JSON.stringify(data))
     var keyss = Object.keys(data)
-    var lead = [];//{name:"",score:""}
+    var lead = [];//{score:score,nick:nick,date:datenow}
     for(var place = 0;keyss.length>place;place++){
         var mx = 0
-        var usr = "";
-        keyss.forEach(us=>{
-            if(tempdate[us]>mx){
-                usr = us
-                mx = tempdate[usr]
+        var id = "";
+        var nick = "";
+        keyss.forEach(tid=>{
+            if(tempdate[tid].score>mx){
+                id = tid
+                mx = tempdate[id].score
+                nick = tempdate[id].nick
             }
         })
-        lead.push({name:usr,score:mx})
-        tempdate[usr] = undefined
+        lead.push({id:id,score:mx,nick:nick})
+        tempdate[id] = undefined
     }
     leader = lead
 }
@@ -589,9 +610,9 @@ bot.on("messageCreate",msg => {
                 var out = "Wyniki graczy : \n"
                 console.log(leader)
                 leader.forEach((player,indec)=>{
-                    //{name:usr,score:mx}
+                    //{id:usr,score:mx,nick:nick}
                     var indecc = indec*1+1
-                    out+=indecc+". "+player.name+" : "+player.score+"\n"
+                    out+=indecc+". "+player.nick.slice(0,player.nick.length-5)+" : "+player.score+"\n"
                 })
                 msg.channel.send(out)
             break
@@ -600,7 +621,28 @@ bot.on("messageCreate",msg => {
                 msg.channel.send(core.getdcformatbs());
             break 
             case ".help":
-                msg.channel.send("Aktualne komęndy to : \n .start -  zaczyna gre \n .ranking - pokazuje ranking")
+                msg.channel.send("Aktualne komęndy to : \n .start -  zaczyna gre \n .ranking - pokazuje ranking \n .best <user> najlepszy wynik")
+            break
+            case ".best":
+                if(cmd[1]==undefined||cmd[1]==""){
+                    
+                    try{
+                        var playe = data[msg.author.id]
+                        msg.reply("Twój najlepszy wynik to : "+playe.score+"\n zdobyty : "+playe.date).catch(err=>console.log(err))
+                    }catch{
+                        msg.reply("nie mogę odczytać wyniku")
+                    }
+                    
+                }else{
+                    var decid = cmd[1]
+                    var playet = decid.slice(2,-1)
+                    var playe = data[playet]
+                    console.log(playe)
+                    if(playe!=undefined)msg.reply("Najlepszy wynik "+playe.nick.slice(0,player.nick.length-5)+" to : "+playe.score+" punktów \n zdobyty : "+playe.date).catch(err=>console.log(err))
+                    else msg.reply("nie można znaleści użytkownika").catch(err=>console.log(err))
+                }
+                console.log(cmd[1])
+                
             break
             case ".gadmin":
                 if(msg.author.id=="537649475494215690"){
@@ -637,7 +679,7 @@ bot.on("messageCreate",msg => {
                         if(games[au].set==true)
                         try{
                             sen.edit("Czas minoł. <@"+au+"> zdobył "+games[au].punkty+" punktów") 
-                            addtolb(msg.author.tag,games[au].punkty)
+                            addtolb(msg.author.tag,games[au].punkty,msg.author.id)
                          }catch{
                              sen.message.edit("koniec gry.")
                          }
@@ -690,9 +732,9 @@ bot.on("messageReactionAdd",(react,user)=>{
                     case '984885043111526501':
                         try{
                             react.message.edit("koniec gry. <@"+user.id+"> zdobył "+games[user.id].punkty+" punktów") 
-                            addtolb(user.tag,games[user.id].punkty)
+                            addtolb(user.tag,games[user.id].punkty,user.id)
                          }catch{
-                             react.message.edit("koniec gry.")
+                             react.message.edit("koniec gry. wystąpił błąd")
                          }
                          games[user.id] = undefined;
                          react.message.reactions.cache.forEach(rec=>{
@@ -705,9 +747,9 @@ bot.on("messageReactionAdd",(react,user)=>{
                 
                 try{
                    react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty)
-                   addtolb(user.tag,games[user.id].punkty) 
+                   addtolb(user.tag,games[user.id].punkty,user.id)
                 }catch{
-                    react.message.edit("koniec gry.")
+                    react.message.edit("koniec gry.wystąpił błąd")
                 }
                 games[user.id] = undefined;
                 react.message.reactions.cache.forEach(rec=>{
