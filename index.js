@@ -628,7 +628,7 @@ bot.on("messageCreate",msg => {
                     
                     try{
                         var playe = data[msg.author.id]
-                        msg.reply("Twój najlepszy wynik to : "+playe.score+" punktó \n zdobyty : "+playe.date).catch(err=>console.log(err))
+                        msg.reply("Twój najlepszy wynik to : "+playe.score+" punktów \n zdobyty : "+playe.date).catch(err=>console.log(err))
                     }catch{
                         msg.reply("nie mogę odczytać wyniku")
                     }
