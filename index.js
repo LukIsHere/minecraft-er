@@ -597,17 +597,24 @@ function reloadrb(){
         var mx = 0
         var id = "";
         var nick = "";
+        console.log(tempdate)
         keyss.forEach(tid=>{
-            if(tempdate[tid].score>mx){
-                id = tid
-                mx = tempdate[id].score
-                nick = tempdate[id].nick
+            try{
+                if(tempdate[tid].score>mx){
+                    id = tid
+                    mx = tempdate[id].score
+                    nick = tempdate[id].nick
+                }
+            } catch{
+
             }
+            
         })
         lead.push({id:id,score:mx,nick:nick})
         tempdate[id] = undefined
     }
     leader = lead
+    console.log(lead)
 }
 var bot = new Client({intents:[
     Intents.FLAGS.GUILD_MEMBERS,
@@ -670,7 +677,7 @@ bot.on("messageCreate",msg => {
                     var playet = decid.slice(2,-1)
                     var playe = data[playet]
                     console.log(playe)
-                    if(playe!=undefined)msg.reply("Najlepszy wynik "+playe.nick.slice(0,player.nick.length-5)+" to : "+playe.score+" punktów \n zdobyty : "+playe.date).catch(err=>console.log(err))
+                    if(playe!=undefined)msg.reply("Najlepszy wynik "+playe.nick.slice(0,playe.nick.length-5)+" to : "+playe.score+" punktów \n zdobyty : "+playe.date).catch(err=>console.log(err))
                     else msg.reply("nie można znaleści użytkownika").catch(err=>console.log(err))
                 }
                 console.log(cmd[1])
