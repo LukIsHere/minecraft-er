@@ -12,6 +12,13 @@ scripable:"Scriptable",
 web:"web",
 node:"node"
 }
+//node only : 
+import fetch from "node-fetch";
+import fs from "fs";
+import {Client , Intents} from "discord.js";
+import { threadId } from "worker_threads";
+
+
 
 //scriptable setup
 //zmianne do zabawy
@@ -69,8 +76,10 @@ var dic = {
         debris:{name:"debris",emote:"<:26:976747566303686666>",points:0},
         player:{name:"player",emote:"<:03:976017287154921502>",points:0},
         fox:{name:"fox",emote:"<:31:976765562275364934>",points:0},	
-		water:{name:"water",emote:"<:32:980055020315758622>",points:0}
+		water:{name:"water",emote:"<:32:980055020315758622>",points:0},
+        barrier:{name:"barrier",emote:"<:33:985931497489973248>",point:0}
 };
+var unbreakable = ["barrier","bedrock"]
 var oredata = {  
     oreorder:[
     [[0,0],[0,1]],
@@ -305,7 +314,14 @@ class gamecore{
         // funkcje kontroli
         }
         getblock(x,y){
-            return this.world[y][x].toString();
+            try{
+                var out = this.world[y][x].toString();
+                if(out==undefined) return dic.barrier.name.toString();
+                else return out
+            }catch{
+                return dic.barrier.name.toString();
+            }
+            
         }	
 		setblockOre(x,y,block){
 			if(this.world[y][x]==dic.stone.name)this.world[y][x] = dic[block].name;	
@@ -342,7 +358,7 @@ class gamecore{
         out+="Punkty : "+this.punkty+"\n"
         for(var yi = 0;yi<9;yi++){
           for(var xi = 0;xi<9;xi++){
-            var b = this.world[y+4-yi][x-4+xi].toString()  
+            var b = this.getblock(x-4+xi,y+4-yi).toString()
             cout+=b.charAt(0)
             if(yi==4&&xi==4)out+= dic.player.emote
             else out+=dic[b].emote
@@ -413,13 +429,20 @@ class gamecore{
         this.setAir()
         }
         move(x,y){
-        this.x += x
-        this.y += y
-        this.setAir()
-        var ty =(this.y)-1
-        var down = this.getblock(this.x,ty)
-        console.log(down)
-        if(down==dic.air.name)this.move(0,-1)
+        var tempx = this.x + x
+        var tempy = this.y + y
+        if(unbreakable.includes(this.getblock(tempx,tempy))){
+
+        }else{
+            this.x = tempx
+            this.y = tempy
+            this.setAir()
+            var ty =(this.y)-1
+            var down = this.getblock(this.x,ty)
+            console.log(down)
+            if(down==dic.air.name)this.move(0,-1)
+        }
+        
         }
         setAir(x=this.x,y=this.y){
           this.punkty += dic[this.getblock(x,y)].points
@@ -526,6 +549,13 @@ Script.setWidget(widget)
 break
 //node
 case "node":
+var BotData = {
+
+}
+var ban = [];
+fetch("https://luktvpl.github.io/json/static_dc/bot_data.json").then(r=>r.json().then(j=>{
+    ban = j.outoffsystem
+}))
 var games = {
 
 }
@@ -539,7 +569,7 @@ function getnowdate(){
     let seconds = date_ob.getSeconds();
     return year + "-" + month + "-" + date + " " + hours + ":" + minutes + ":" + seconds
 }
-var fs = require("fs")
+
 var data = JSON.parse(fs.readFileSync("scores.json","utf-8"))
 function addtolb(nick,score,id){
     console.log(nick+":"+score)
@@ -579,14 +609,13 @@ function reloadrb(){
     }
     leader = lead
 }
-var dcss = require("discord.js");
-var bot = new dcss.Client({intents:[
-    dcss.Intents.FLAGS.GUILD_MEMBERS,
-    dcss.Intents.FLAGS.GUILD_MESSAGES,
-    dcss.Intents.FLAGS.GUILDS,
-    dcss.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    dcss.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-    dcss.Intents.FLAGS.DIRECT_MESSAGES
+var bot = new Client({intents:[
+    Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+    Intents.FLAGS.DIRECT_MESSAGES
 ]})
 var emotes = {
     down:":d_:984848910222762064",
@@ -621,7 +650,10 @@ bot.on("messageCreate",msg => {
                 msg.channel.send(core.getdcformatbs());
             break 
             case ".help":
-                msg.channel.send("Aktualne komęndy to : \n .start -  zaczyna gre \n .ranking - pokazuje ranking \n .best <user> najlepszy wynik")
+                msg.channel.send("Aktualne komęndy to : \n .start -  zaczyna gre \n .ranking - pokazuje ranking \n .best <user> najlepszy wynik \n .autor - twórca bota")
+            break
+            case ".autor":
+                msg.channel.send("Twórcą bota jest : luktvpl#3144")
             break
             case ".best":
                 if(cmd[1]==undefined||cmd[1]==""){
@@ -663,6 +695,9 @@ bot.on("messageCreate",msg => {
             break
             case ".start":
                 var au = msg.author.id
+                if(ban.includes(au.toString())){
+                    msg.channel.send("niestety ale nie mogę tego dla cb zrobić")
+                } else{
                 games[au] = new gamecore()
                 msg.channel.send(games[au].getdcformatbs()).then(sen=>{
                     games[au].setmsg(sen.id)
@@ -693,6 +728,8 @@ bot.on("messageCreate",msg => {
                         
                     },300000)
                 })
+                }
+                
             
             break
         }
@@ -766,7 +803,8 @@ bot.on("messageReactionAdd",(react,user)=>{
         } 
     }
 })
-bot.login(require("../minecraft.json").token)
+var tk = fs.readFileSync("../minecraft.json").toString()
+bot.login(JSON.parse(tk).token)
 break
 }
 }
