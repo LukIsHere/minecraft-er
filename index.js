@@ -713,8 +713,11 @@ bot.on("messageCreate",msg => {
                         try{
                         if(games[au].set==true)
                         try{
+                            
                             sen.edit("Czas minoł. <@"+au+"> zdobył "+games[au].punkty+" punktów") 
+                            
                             addtolb(msg.author.tag,games[au].punkty,msg.author.id)
+                            games[au] = undefined
                          }catch{
                              sen.message.edit("koniec gry.")
                          }
@@ -723,7 +726,7 @@ bot.on("messageCreate",msg => {
                              rec.remove()
                          })  
                         }catch{
-
+                            games[au] = undefined
                         }
                         
                     },300000)
@@ -784,6 +787,7 @@ bot.on("messageReactionAdd",(react,user)=>{
                 
                 try{
                    react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty)
+                   games[user.id] = undefined
                    addtolb(user.tag,games[user.id].punkty,user.id)
                 }catch{
                     react.message.edit("koniec gry.wystąpił błąd")
