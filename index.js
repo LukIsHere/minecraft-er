@@ -7,11 +7,6 @@ var platform = "node";
 //   console.log(navigator.userAgent) browser
 //   console.log("Scriptable") scriptable
 // aktywacja zmiennych i innem
-var plat = {
-scripable:"Scriptable",
-web:"web",
-node:"node"
-}
 //node only : 
 import fetch from "node-fetch";
 import fs from "fs";
@@ -42,7 +37,12 @@ var otherIMG = [
 ]
 var imgsl = 0
 
-//blocks
+//blocks i skiny
+var skins = {
+    luk:{name:"luk",emoji:"<:luk:976017287154921502>",cena:"2000"}
+}
+    
+
 var dic = {
         bedrock:{name:"bedrock",emote:"<:25:976747546405920769>",points:0},
         deepslate:{name:"deepslate",emote:"<:16:976747345008025620>",points:0},
@@ -74,7 +74,7 @@ var dic = {
         obsidian:{name:"obsidian",emote:"<:27:976747582762151976>",points:0},
         netherrack:{name:"netherrack",emote:"<:10:976747165869297665>",points:0},  
         debris:{name:"debris",emote:"<:26:976747566303686666>",points:0},
-        player:{name:"player",emote:"<:03:976017287154921502>",points:0},
+        player:{name:"cheast",emote:"<:03:986301020386758656>",points:500},
         fox:{name:"fox",emote:"<:31:976765562275364934>",points:0},	
 		water:{name:"water",emote:"<:32:980055020315758622>",points:0},
         barrier:{name:"barrier",emote:"<:33:985931497489973248>",point:0}
@@ -166,23 +166,20 @@ var structures = {
 	maxcount:2
 	}
 }
-if(platform=="web"){
-//load images
-/*Object.keys(dic.imgs).forEach(imgName => {
-var urlll = "https://luktvpl.github.io/minecraft-er-web/res/"+imgName+".PNG"
-var img = new Image()
-img.src = urlll;
-img.onLoad = function(){
-dic.imgs[imgName]=img;
-}
-})*/
-}
+
 class gamecore{
-    constructor(){
+    constructor(playerc=1,playerd=[{skin:"luk"}]){
+        this.skin = []
+        this.x = []
+        this.y = []
+        playerd.forEach((p,i)=>{
+            this.skin.push(p.skin)
+            this.x[i]=Math.round(ww/2);
+            this.y[i]=128;
+        })
+        this.pcount = playerc
         this.generated = false;
         this.world = []
-        this.x=Math.round(ww/2);
-        this.y=128;
         this.generateOW();
         this.set = true;
         this.punkty = 0;
@@ -253,7 +250,10 @@ class gamecore{
             this.world[tempstone+1][xi] = dic.dirt.name;
             if(tempstone<128+6)this.world[tempstone+2][xi] = dic.dirt.name;else this.world[tempstone+2][xi] = dic.grass.name;
             //drzewo
-            if(xi==this.x)this.y = tempstone+3
+            this.skin.forEach((s,i)=>{
+                if(xi==this.x[i])this.y[i] = tempstone+3
+            })
+            
 			
             if(random(7)==7&&tempstone>128+7){
                 if(xi==32)this.y = tempstone+6
@@ -352,7 +352,9 @@ class gamecore{
         console.log(oput);
         }
 //         podstawowy format dc.
-        getdcformatbs(x=this.x,y=this.y){
+        getdcformatbs(player=0){
+        var x = this.x[player]
+        var y = this.y[player]
         var out = "";
         var cout = "";
         out+="Punkty : "+this.punkty+"\n"
@@ -360,7 +362,7 @@ class gamecore{
           for(var xi = 0;xi<9;xi++){
             var b = this.getblock(x-4+xi,y+4-yi).toString()
             cout+=b.charAt(0)
-            if(yi==4&&xi==4)out+= dic.player.emote
+            if(yi==4&&xi==4)out+= skins[this.skin[player]].emoji
             else out+=dic[b].emote
           }
           out+="\n"
@@ -371,72 +373,15 @@ class gamecore{
         return out
          
         }
-//         rysowanie canvy cały światscriptable
-     drawbigScriptable(x=this.x,y=this.y){
-        var drawc = new DrawContext()		
-		var blue = new Color("#97c7ff")
-		
-		
-		var size = WidgetSize*16
-		var bonsizepar = (WidgetSize-1)/2
-		
-        drawc.size = new Size(this.Wwidth*16, 192*16)		
-		drawc.setFillColor(blue)
-		drawc.fill(new Rect(0, 0, this.Wwidth*16, 192*16))
-        drawc.drawImageInRect(imgs.bg, new Rect(0, 0, 64*16, 64*16))
-        for(var yi = 0;yi<192;yi++){
-          for(var xi = 0;xi<this.Wwidth;xi++){
-            var b = this.world[191-yi][(this.Wwidth-1)-xi].toString()  
-            var scaler = 16
-            drawc.drawImageInRect(imgs[b],new Rect(xi*scaler, yi*scaler, scaler, scaler))
-            
-        }
-      }
-         
-         drawc.font = new Font("Minecraft_PL_Font", 160)
-//         drawc.drawText("test", point(0, 10))
-        drawc
-        var img = drawc.getImage()
-        
-        return img;
-        }	
-		drawCanvasScriptable(x=this.x,y=this.y){
-        var drawc = new DrawContext()	
-		var size = WidgetSize*16
-		var bonsizepar = (WidgetSize-1)/2
-		
-        drawc.size = new Size(size, size)
-        drawc.drawImageInRect(imgs.bg, new Rect(0, 0, size, size))
-        for(var yi = 0;yi<WidgetSize;yi++){
-          for(var xi = 0;xi<WidgetSize;xi++){
-            var b = this.world[y+bonsizepar-yi][x-bonsizepar+xi].toString()  
-            var scaler = 16
-            drawc.drawImageInRect(imgs[b],new Rect(xi*scaler, yi*scaler, scaler, scaler))
-            
-        }
-      }
-         
-         drawc.font = new Font("Minecraft_PL_Font", 160)
-//         drawc.drawText("test", point(0, 10))
-        drawc
-        var img = drawc.getImage()
-        
-        return img;
-        }
-        go(x,y){
-        this.x = x
-        this.y = y
-        this.setAir()
-        }
-        move(x,y){
-        var tempx = this.x + x
-        var tempy = this.y + y
+        move(x,y,playe=0){
+        var tempx = this.x[playe] + x
+        var tempy = this.y[playe] + y
         if(unbreakable.includes(this.getblock(tempx,tempy))){
 
         }else{
-            this.x = tempx
-            this.y = tempy
-            this.setAir()
+            this.x[playe] = tempx
+            this.y[playe] = tempy
+            this.setAir(this.x[playe],this.y[playe])
             var ty =(this.y)-1
             var down = this.getblock(this.x,ty)
             console.log(down)
@@ -444,7 +389,7 @@ class gamecore{
         }
         
         }
-        setAir(x=this.x,y=this.y){
+        setAir(x,y){
           this.punkty += dic[this.getblock(x,y)].points
           this.setblock(x, y, dic.air.name)
           if(this.getblock(x+1, y)==dic.black.name) this.setAir(x+1, y)  
@@ -462,93 +407,10 @@ function random(to){
     return rand
 }
 // przegotowanie
-switch(platform){
-case "web":
-// przeglądarka
- var game = {
-    canvas: document.getElementById("game")
-}
-start()
-break
-case "Scriptable":
-// scriptable
-//wczytywanie bloków
-var fm = FileManager.local()
-var path = fm.documentsDirectory()
-function getpath(fileName){
-return fm.joinPath(path, fileName)
-}
-var bloki = Object.keys(dic)
-bloki.forEach(block =>{
-console.log(block)
-var pthhh = getpath(block+".png")
-if(!fm.fileExists(pthhh)){
- var req = new Request(getemojiUrl(EmojiToId(dic[block].emote)))
-let img = req.loadImage().then(img =>{
-fm.writeImage(pthhh, img)
-imgs[block]= img
-imgsl++
 
-if(imgsl==bloki.length+otherIMG.length)start()
-})
 
-}else {
-let img = fm.readImage(pthhh)
-imgs[block] = img
-imgsl++
-if(imgsl==bloki.length+otherIMG.length)start()
-}
-})
-// other assets
-
-otherIMG.forEach(block =>{
-console.log(block)
-var pthhh = getpath(block+".png")
-if(!fm.fileExists(pthhh)){
- var req = new Request("https://luktvpl.github.io/minecraft-er-web/res/"+block+".PNG")
-let img = req.loadImage().then(img =>{
-fm.writeImage(pthhh, img)
-imgs[block]= img
-imgsl++
-
-if(imgsl==bloki.length+otherIMG.length)start()
-})
-
-}else {
-let img = fm.readImage(pthhh)
-imgs[block] = img
-imgsl++
-if(imgsl==bloki.length+otherIMG.length)start()
-}
-})
-
-break
-case "node":
-// node.js
-start()
-break
-}
 // główne skrypty
-function start(){
-switch(platform){
-case "web":
-// przeglądarka
 
-break
-case "Scriptable":
-// scriptable
-var core = new gamecore();
-// core.logWorld()
-sendMessagescr(core.getdcformatbs())
-var wimg = core.drawCanvasScriptable()
-widget.backgroundImage = wimg
-
-QuickLook.present(wimg, true)
-if(bigrender)QuickLook.present(core.drawbigScriptable(), true)
-Script.setWidget(widget)
-break
-//node
-case "node":
 var BotData = {
 
 }
@@ -816,10 +678,7 @@ bot.on("messageReactionAdd",(react,user)=>{
 })
 var tk = fs.readFileSync("../minecraft.json").toString()
 bot.login(JSON.parse(tk).token)
-break
-}
-}
-// sendMessagescrable("test")
+
 //funkcje dodatkowe
 // zdobywanie punktu
 function point(x,y){
@@ -833,28 +692,4 @@ function getemojiUrl(id){
 function EmojiToId(emoji){
 return emoji.slice(emoji.length-19, emoji.length-1)
 }
-function sendMessagescr(msg) {
-      var webhookurl = "https://discord.com/api/webhooks/984441794240577586/WKik_qsiqYd10FBUrUH6Iff9K2F655XbYWQm5eFzjgyU6UcULI7MZZpimX5QKTCHUgFF"  
-      const params = {
-        username: "Minecraft'er",
-        avatar_url: "https://github.com/luktvpl/luk_pack_minecraft/raw/main/luk_pack/pack.png",
-        content: msg
-      }
-      if(platform=="Scriptable"){
-//         Scriptable
-      const req = new Request(webhookurl);
-      req.method = "post"
-      req.headers = {
-    	"Content-Type": "application/json"  
-      };
-      req.body = JSON.stringify(params);
-      req.loadJSON();
-     } else{
-//       other
-      const request = new XMLHttpRequest();
-      request.open("POST", webhookurl);
-      request.setRequestHeader('Content-type', 'application/json');
-      request.send(JSON.stringify(params));
-    }
-    }
-    
+
