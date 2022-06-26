@@ -1,0 +1,20 @@
+options:  
+#ogolne
+  brakperm: &l&cBrak permisji
+  prefix: &r&3KAMEROWO &8>> &r #prefix serwera
+  ucomm: &8[&cBLAD&8] &r&7Taka komenda nie istnieje
+  czekaj: &cPoczekaj!, ta komenda ma cooldown
+  spawn: 0, 40, 0 in world "world"
+  alertperm: alert.use #permisja do uzycia alertu
+  alertblad: &cUzyj: &3/alert &8(&7tekst&8) #wiadomosc gdy skladnia bedzie zla
+  alertprefix: &8[&3Alert&8] #prefix alertu
+
+command /alert [<text>]:
+    permission: {@alertperm}
+    permission message: "{@brakperm}"
+    trigger:
+        if arg-1 is not set:
+            send "{@prefix} {@alertblad}"
+        if arg-1 is set:
+            send player title "{@alertprefix}" with subtitle arg-1 for 10 seconds
+            broadcast "{@alertprefix} %arg-1%"

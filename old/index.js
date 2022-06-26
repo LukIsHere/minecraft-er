@@ -39,45 +39,45 @@ var imgsl = 0
 
 //blocks i skiny
 var skins = {
-    luk:{name:"luk",emoji:"<:luk:976017287154921502>",cena:"2000"}
+    luk:{name:"luk",emoji:"<:p02:986985585375871117>",cena:"2000"}
 }
     
 
 var dic = {
-        bedrock:{name:"bedrock",emote:"<:25:976747546405920769>",points:0},
-        deepslate:{name:"deepslate",emote:"<:16:976747345008025620>",points:0},
-        stone:{name:"stone",emote:"<:01:976014584836128798>",points:0},
-        dirt:{name:"dirt",emote:"<:04:976025190741966920>",points:0},
-        grass:{name:"grass",emote:"<:00:976014562996391936>",points:0},
-        air:{name:"air",emote:"<:02:976014603182014514>",points:0},
-        wood:{name:"wood",emote:"<:05:976028310289145916>",points:0},
-        leaves:{name:"leaves",emote:"<:06:976028821142794240>",points:0},
-        black:{name:"black",emote:"<:30:976752550713892885>",points:0},
-        diamond:{name:"diamond",emote:"<:08:976747112123486239>",points:100},
-        diamondd:{name:"diamondd",emote:"<:28:976747598763417620>",points:100},
-        coal:{name:"coal",emote:"<:07:976747069731667988>",points:5},
-        coald:{name:"coald",emote:"<:11:976747199310491658>",points:5},
-        copper:{name:"copper",emote:"<:24:976747529930670110>",points:10},
-        copperd:{name:"copperd",emote:"<:21:976747460452036618>",points:10},
-        gold:{name:"gold",emote:"<:09:976747136509173791>",points:20},
-        goldd:{name:"goldd",emote:"<:23:976747504311877643>",points:20},
-        goldn:{name:"goldn",emote:"<:17:976747365719486494>",points:20},
-        iron:{name:"iron",emote:"<:14:976747278100475916>",points:25},
-        irond:{name:"irond",emote:"<:12:976747224799272970>",points:25},
-        emerald:{name:"emerald",emote:"<:19:976747421013012490>",points:200},
-        emeraldd:{name:"emeraldd",emote:"<:13:976747252309717093>",points:200},
-        lapis:{name:"lapis",emote:"<:18:976747395742326794>",points:5},
-        lapisd:{name:"lapisd",emote:"<:22:976747483327778816>",points:5},
-        redstone:{name:"redstone",emote:"<:15:976747301110444042>",points:7},
-        redstoned:{name:"redstoned",emote:"<:29:976747620594749470>",points:7},  
-        quartz:{name:"quartz",emote:"<:20:976747440675905550>",points:10},
-        obsidian:{name:"obsidian",emote:"<:27:976747582762151976>",points:0},
-        netherrack:{name:"netherrack",emote:"<:10:976747165869297665>",points:0},  
-        debris:{name:"debris",emote:"<:26:976747566303686666>",points:0},
-        player:{name:"cheast",emote:"<:03:986301020386758656>",points:500},
-        fox:{name:"fox",emote:"<:31:976765562275364934>",points:0},	
-		water:{name:"water",emote:"<:32:980055020315758622>",points:0},
-        barrier:{name:"barrier",emote:"<:33:985931497489973248>",point:0}
+    grass:{name:"grass",emote:"<:00:976014562996391936>",points:0},
+    stone:{name:"stone",emote:"<:01:976014584836128798>",points:0},
+    air:{name:"air",emote:"<:02:976014603182014514>",points:0},
+    cheast:{name:"cheast",emote:"<:03:986301020386758656>",points:500},
+    dirt:{name:"dirt",emote:"<:04:976025190741966920>",points:0},
+    wood:{name:"wood",emote:"<:05:976028310289145916>",points:0},
+    leaves:{name:"leaves",emote:"<:06:976028821142794240>",points:0},
+    coal:{name:"coal",emote:"<:07:976747069731667988>",points:5},
+    diamond:{name:"diamond",emote:"<:08:976747112123486239>",points:100},
+    gold:{name:"gold",emote:"<:09:976747136509173791>",points:20},
+    netherrack:{name:"netherrack",emote:"<:10:976747165869297665>",points:0},
+    coald:{name:"coald",emote:"<:11:976747199310491658>",points:5},
+    irond:{name:"irond",emote:"<:12:976747224799272970>",points:25},
+    emeraldd:{name:"emeraldd",emote:"<:13:976747252309717093>",points:200},
+    iron:{name:"iron",emote:"<:14:976747278100475916>",points:25},
+    redstone:{name:"redstone",emote:"<:15:976747301110444042>",points:7},
+    deepslate:{name:"deepslate",emote:"<:16:976747345008025620>",points:0},
+    goldn:{name:"goldn",emote:"<:17:976747365719486494>",points:20},
+    lapis:{name:"lapis",emote:"<:18:976747395742326794>",points:5},
+    emerald:{name:"emerald",emote:"<:19:976747421013012490>",points:200},
+    quartz:{name:"quartz",emote:"<:20:976747440675905550>",points:10},
+    copperd:{name:"copperd",emote:"<:21:976747460452036618>",points:10},
+    lapisd:{name:"lapisd",emote:"<:22:976747483327778816>",points:5},
+    goldd:{name:"goldd",emote:"<:23:976747504311877643>",points:20},
+    copper:{name:"copper",emote:"<:24:976747529930670110>",points:10},
+    bedrock:{name:"bedrock",emote:"<:25:976747546405920769>",points:0},
+    debris:{name:"debris",emote:"<:26:976747566303686666>",points:0},
+    obsidian:{name:"obsidian",emote:"<:27:976747582762151976>",points:0},
+    diamondd:{name:"diamondd",emote:"<:28:976747598763417620>",points:100},
+    redstoned:{name:"redstoned",emote:"<:29:976747620594749470>",points:7},
+    black:{name:"black",emote:"<:30:976752550713892885>",points:0},
+    fox:{name:"fox",emote:"<:31:976765562275364934>",points:0},	
+	water:{name:"water",emote:"<:32:980055020315758622>",points:0},
+    barrier:{name:"barrier",emote:"<:33:985931497489973248>",point:0}
 };
 var unbreakable = ["barrier","bedrock"]
 var oredata = {  
@@ -96,7 +96,14 @@ var oredata = {
       dy:150,
       ord:[0,1,2],
       count:40
-    },	
+    },
+    {
+        name:dic.iron.name,
+        y:7,
+        dy:150,
+        ord:[0,1,2],
+        count:40
+    },
 	{
       name:dic.copper.name,
       y:32,
@@ -116,13 +123,6 @@ var oredata = {
       y:7,
       dy:80,
       ord:[2,4,1,3],
-      count:45
-    },	
-	{//iron 2
-      name:dic.iron.name,
-      y:64,
-      dy:150,
-      ord:[0,1,2,3,5],
       count:45
     },	
 	{
