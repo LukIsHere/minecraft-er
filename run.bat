@@ -1,1 +1,0 @@
-.\build-windows\Debug\start.exe

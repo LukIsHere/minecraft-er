@@ -39,7 +39,7 @@ var imgsl = 0
 
 //blocks i skiny
 var skins = {
-    luk:{name:"luk",emoji:"<:p02:986985585375871117>",cena:"2000"}
+    luk:{name:"luk",emoji:"<:p00:986984735471443969>",cena:"2000"}
 }
     
 
@@ -436,7 +436,7 @@ var data = JSON.parse(fs.readFileSync("scores.json","utf-8"))
 function addtolb(nick,score,id){
     console.log(nick+":"+score)
     try{
-        if(score>data[id].score){
+        if(score>data[id].score&&data[id].score!=0){
             var datenow = getnowdate()
             data[id] = {score:score,nick:nick,date:datenow}
         }
@@ -583,12 +583,12 @@ bot.on("messageCreate",msg => {
                         if(games[au].set==true)
                         try{
                             
-                            sen.edit("Czas minoł. <@"+au+"> zdobył "+games[au].punkty+" punktów") 
+                            sen.edit("Czas minął. <@"+au+"> zdobył "+games[au].punkty+" punktów").catch(err=>console.log(err))
                             
                             addtolb(msg.author.tag,games[au].punkty,msg.author.id)
                             games[au] = undefined
                          }catch{
-                             sen.message.edit("koniec gry.")
+                             sen.message.edit("koniec gry.").catch(err=>console.log(err))
                          }
                          games[au] = undefined;
                          sen.reactions.cache.forEach(rec=>{
