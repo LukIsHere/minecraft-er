@@ -12,7 +12,7 @@ import fetch from "node-fetch";
 import fs from "fs";
 import {Client , Intents} from "discord.js";
 import { threadId } from "worker_threads";
-
+var sesions = 0;
 
 
 //scriptable setup
@@ -436,7 +436,7 @@ var data = JSON.parse(fs.readFileSync("scores.json","utf-8"))
 function addtolb(nick,score,id){
     console.log(nick+":"+score)
     try{
-        if(score>data[id].score&&data[id].score!=0){
+        if(score>data[id].score){
             var datenow = getnowdate()
             data[id] = {score:score,nick:nick,date:datenow}
         }
@@ -447,34 +447,15 @@ function addtolb(nick,score,id){
     
     fs.writeFileSync("scores.json",JSON.stringify(data),"utf-8")
     reloadrb()
-    
+    sesions = 0;
 }
 var leader =  [];
 reloadrb()
 function reloadrb(){
     var tempdate = JSON.parse(JSON.stringify(data))
     var keyss = Object.keys(data)
-    var lead = [];//{score:score,nick:nick,date:datenow}
-    for(var place = 0;keyss.length>place;place++){
-        var mx = 0
-        var id = "";
-        var nick = "";
-        console.log(tempdate)
-        keyss.forEach(tid=>{
-            try{
-                if(tempdate[tid].score>mx){
-                    id = tid
-                    mx = tempdate[id].score
-                    nick = tempdate[id].nick
-                }
-            } catch{
-
-            }
-            
-        })
-        lead.push({id:id,score:mx,nick:nick})
-        tempdate[id] = undefined
-    }
+    var lead =  Object.values(tempdate);//{score:score,nick:nick,date:datenow}
+    lead.sort((a,b)=>b.score-a.score)
     leader = lead
     console.log(lead)
 }
@@ -564,20 +545,21 @@ bot.on("messageCreate",msg => {
             break
             case ".start":
                 var au = msg.author.id
-                if(ban.includes(au.toString())){
-                    msg.channel.send("niestety ale nie mogę tego dla cb zrobić")
+                if(ban.includes(au.toString())||sesions==1){
+                    msg.channel.send("niestety ale nie mogę tego teraz dla cb zrobić")
                 } else{
                 games[au] = new gamecore()
                 msg.channel.send(games[au].getdcformatbs()).then(sen=>{
                     games[au].setmsg(sen.id)
                     console.log(sen.id)
+                    sesions = 1
                     sen.react(emotes.left).then(()=>{
                         sen.react(emotes.down).then(()=>{
                             sen.react(emotes.rigth).then(()=>{
                                 sen.react(":stop:984885043111526501")
-                            })
-                        })
-                    })
+                            }).catch(err => console.log(err))
+                        }).catch(err => console.log(err))
+                    }).catch(err => console.log(err))
                     setTimeout(()=>{
                         try{
                         if(games[au].set==true)
@@ -588,6 +570,7 @@ bot.on("messageCreate",msg => {
                             addtolb(msg.author.tag,games[au].punkty,msg.author.id)
                             games[au] = undefined
                          }catch{
+                            sesions = 0;
                              sen.message.edit("koniec gry.").catch(err=>console.log(err))
                          }
                          games[au] = undefined;
@@ -618,7 +601,7 @@ bot.on("messageReactionAdd",(react,user)=>{
     console.log(emon)
     if(emo=='984848916455497778'||emo=='984848910222762064'||emo=='984848919014039663'||emo=='984885043111526501'){
         if(user.id!="975769257885450340"){
-        react.users.remove(user)
+        react.users.remove(user).catch(err => console.log(err))
         try{
         if(games[user.id].msg==react.message.id){
             try{
@@ -626,45 +609,47 @@ bot.on("messageReactionAdd",(react,user)=>{
                     case '984848916455497778':
                         //left
                         games[user.id].move(-1,0)
-                        react.message.edit(games[user.id].getdcformatbs())
+                        react.message.edit(games[user.id].getdcformatbs()).catch(err => console.log(err))
                     break
                     case '984848910222762064':
                         //down
                         games[user.id].move(0,-1)
-                        react.message.edit(games[user.id].getdcformatbs())
+                        react.message.edit(games[user.id].getdcformatbs()).catch(err => console.log(err))
                     break
                     case '984848919014039663':
                         //right
                         games[user.id].move(1,0)
-                        react.message.edit(games[user.id].getdcformatbs())
+                        react.message.edit(games[user.id].getdcformatbs()).catch(err => console.log(err))
                     break
                     case '984885043111526501':
                         try{
-                            react.message.edit("koniec gry. <@"+user.id+"> zdobył "+games[user.id].punkty+" punktów") 
+                            react.message.edit("koniec gry. <@"+user.id+"> zdobył "+games[user.id].punkty+" punktów") .catch(err => console.log(err))
                             addtolb(user.tag,games[user.id].punkty,user.id)
                          }catch{
-                             react.message.edit("koniec gry. wystąpił błąd")
+                             react.message.edit("koniec gry. wystąpił błąd").catch(err => console.log(err))
+                             sesions = 0
                          }
                          games[user.id] = undefined;
                          react.message.reactions.cache.forEach(rec=>{
                              rec.remove()
-                         })
+                         }).catch(err => console.log(err))
                     break
                     } 
             }
             catch{
                 
                 try{
-                   react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty)
+                   react.message.edit("koniec gry. Zdobyte punkty : "+games[user.id].punkty).catch(err => console.log(err))
                    games[user.id] = undefined
                    addtolb(user.tag,games[user.id].punkty,user.id)
                 }catch{
-                    react.message.edit("koniec gry.wystąpił błąd")
+                    react.message.edit("koniec gry.wystąpił błąd").catch(err => console.log(err))
+                    sesions = 0
                 }
                 games[user.id] = undefined;
                 react.message.reactions.cache.forEach(rec=>{
                     rec.remove()
-                })
+                }).catch(err => console.log(err))
             }
            
         }
