@@ -13,7 +13,7 @@ import fs from "fs";
 import {Client , Intents} from "discord.js";
 import { threadId } from "worker_threads";
 var sesions = 0;
-
+var badch = ["987300399532867654","994239026116710470"];
 
 //scriptable setup
 //zmianne do zabawy
@@ -483,7 +483,9 @@ bot.on("messageCreate",msg => {
     console.log(content);
     if(content.charAt(0)=="."){
         var cmd = content.split(" ")
-        if((msg.guild.id=="962661196086009946"&&(msg.channel.id=="962968324923330610"||msg.channel.id=="984440535102144542"))||msg.guild.id!="962661196086009946"){
+        
+           
+        if(msg.guild!=null){
         switch (cmd[0]){
             case ".ranking":
                 var out = "Wyniki graczy : \n"
@@ -548,8 +550,10 @@ bot.on("messageCreate",msg => {
             break
             case ".start":
                 var au = msg.author.id
-                if(ban.includes(au.toString())||sesions==1){
-                    msg.channel.send("niestety ale nie mogę tego teraz dla cb zrobić")
+                if(ban.includes(au.toString())||sesions==1||badch.includes(msg.channel.id)){
+                    
+                    msg.author.send("niestety ale nie mogę tego teraz dla cb zrobić").catch(err => console.log(err))
+                    msg.delete().catch(err => console.log(err))
                 } else{
                 games[au] = new gamecore()
                 msg.channel.send(games[au].getdcformatbs()).then(sen=>{
