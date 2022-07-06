@@ -490,8 +490,11 @@ bot.on("messageCreate",msg => {
                 console.log(leader)
                 leader.forEach((player,indec)=>{
                     //{id:usr,score:mx,nick:nick}
-                    var indecc = indec*1+1
-                    out+=indecc+". "+player.nick.slice(0,player.nick.length-5)+" : "+player.score+"\n"
+                    if(indec<25){
+                        var indecc = indec*1+1
+                        out+=indecc+". "+player.nick.slice(0,player.nick.length-5)+" : "+player.score+"\n"
+                    }
+                    
                 })
                 msg.channel.send(out)
             break
