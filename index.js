@@ -466,7 +466,8 @@ var bot = new Client({intents:[
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
     Intents.FLAGS.DIRECT_MESSAGES
-]})
+],restTimeOffset:0})
+
 var emotes = {
     down:":d_:984848910222762064",
     rigth:":r_:984848919014039663",
