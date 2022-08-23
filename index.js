@@ -508,8 +508,8 @@ bot.on("messageCreate",msg => {
             case ".help":
                 msg.channel.send("Aktualne komęndy to : \n .start -  zaczyna gre \n .ranking - pokazuje ranking \n .best <user> najlepszy wynik \n .autor - twórca bota")
             break
-            case ".autor":
-                msg.channel.send("Twórcą bota jest : luktvpl#3144")
+            case ".autor": //jeśli masz jakikolwiek szacunek do mojej pracy pozostaw to tak jak jest albo dodaj siebie jeśli wprowadziłeś jakieś nowe rzeczy do kodu
+                msg.channel.send("Twórcą bota jest : luk#3380)
             break
             case ".best":
                 if(cmd[1]==undefined||cmd[1]==""){
