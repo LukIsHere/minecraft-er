@@ -607,7 +607,7 @@ bot.on("messageReactionAdd",(react,user)=>{
     var emon = react.emoji.name;
     console.log(emo)
     console.log(emon)
-    if(emo=='984848916455497778'||emo=='984848910222762064'||emo=='984848919014039663'||emo=='984885043111526501'){
+    if((emo=='984848916455497778'||emo=='984848910222762064'||emo=='984848919014039663'||emo=='984885043111526501')&&react.message.author.id==975769257885450340){
         if(user.id!="975769257885450340"){
         react.users.remove(user).catch(err => console.log(err))
         try{
